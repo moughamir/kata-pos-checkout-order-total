@@ -10,4 +10,14 @@ describe('Checkout', () => {
       expect(checkout.getTotal()).toBe(1.89)
     })
   })
+
+  describe('Use Case 2: Accept a scanned item and weight', () => {
+    it('should accept a scanned item with weight and increase total by price per weight', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('ground beef', 5.99)
+      checkout.scan('ground beef', 2.5)
+      
+      expect(checkout.getTotal()).toBeCloseTo(14.975)
+    })
+  })
 })
