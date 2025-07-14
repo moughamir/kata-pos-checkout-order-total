@@ -6,10 +6,14 @@ export class Checkout {
     this.prices.set(item, price)
   }
 
-  scan(item: string): void {
+  scan(item: string, weight?: number): void {
     const price = this.prices.get(item)
     if (price !== undefined) {
-      this.total += price
+      if (weight !== undefined) {
+        this.total += price * weight
+      } else {
+        this.total += price
+      }
     }
   }
 
