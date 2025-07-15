@@ -40,4 +40,27 @@ describe('Checkout', () => {
       expect(checkout.getTotal()).toBeCloseTo(9.98)
     })
   })
+
+  describe('Use Case 4: Buy N items get M at %X off', () => {
+    it('should apply buy 1 get 1 free special', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 1.89)
+      checkout.setBuyNGetMPercentOffSpecial('soup', 1, 1, 100)
+      checkout.scan('soup')
+      checkout.scan('soup')
+      
+      expect(checkout.getTotal()).toBe(1.89)
+    })
+
+    it('should apply buy 2 get 1 half off special', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('bread', 2.00)
+      checkout.setBuyNGetMPercentOffSpecial('bread', 2, 1, 50)
+      checkout.scan('bread')
+      checkout.scan('bread')
+      checkout.scan('bread')
+      
+      expect(checkout.getTotal()).toBe(5.00)
+    })
+  })
 })
