@@ -71,16 +71,18 @@ export class Checkout {
     const completeGroups = Math.floor(count / groupSize)
     const remainingItems = count % groupSize
     
-    let total = 0
+    const specialGroupPrice = this.calculateSpecialGroupPrice(price, special)
+    const completeGroupsTotal = specialGroupPrice * completeGroups
+    const remainingItemsTotal = price * remainingItems
     
-    for (let i = 0; i < completeGroups; i++) {
-      total += price * buyN
-      total += price * getM * (100 - percentOff) / 100
-    }
-    
-    total += price * remainingItems
-    
-    return total
+    return completeGroupsTotal + remainingItemsTotal
+  }
+
+  private calculateSpecialGroupPrice(price: number, special: BuyNGetMSpecial): number {
+    const { buyN, getM, percentOff } = special
+    const fullPriceItems = price * buyN
+    const discountedItems = price * getM * (100 - percentOff) / 100
+    return fullPriceItems + discountedItems
   }
 
   getTotal(): number {
