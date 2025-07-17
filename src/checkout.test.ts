@@ -63,4 +63,29 @@ describe('Checkout', () => {
       expect(checkout.getTotal()).toBe(5.00)
     })
   })
+
+  describe('Use Case 5: N for $X specials', () => {
+    it('should apply 3 for $5.00 special', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 1.89)
+      checkout.setNForXSpecial('soup', 3, 5.00)
+      checkout.scan('soup')
+      checkout.scan('soup')
+      checkout.scan('soup')
+      
+      expect(checkout.getTotal()).toBe(5.00)
+    })
+
+    it('should handle partial groups in N for $X specials', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 1.89)
+      checkout.setNForXSpecial('soup', 3, 5.00)
+      checkout.scan('soup')
+      checkout.scan('soup')
+      checkout.scan('soup')
+      checkout.scan('soup')
+      
+      expect(checkout.getTotal()).toBe(6.89)
+    })
+  })
 })
