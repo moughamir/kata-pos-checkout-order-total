@@ -4,10 +4,16 @@ interface BuyNGetMSpecial {
   percentOff: number
 }
 
+interface NForXSpecial {
+  n: number
+  x: number
+}
+
 export class Checkout {
   private prices: Map<string, number> = new Map()
   private markdowns: Map<string, number> = new Map()
   private buyNGetMSpecials: Map<string, BuyNGetMSpecial> = new Map()
+  private nForXSpecials: Map<string, NForXSpecial> = new Map()
   private scannedItems: Map<string, number> = new Map()
   private total: number = 0
 
@@ -21,6 +27,10 @@ export class Checkout {
 
   setBuyNGetMPercentOffSpecial(item: string, buyN: number, getM: number, percentOff: number): void {
     this.buyNGetMSpecials.set(item, { buyN, getM, percentOff })
+  }
+
+  setNForXSpecial(item: string, n: number, x: number): void {
+    this.nForXSpecials.set(item, { n, x })
   }
 
   scan(item: string, weight?: number): void {
@@ -54,10 +64,13 @@ export class Checkout {
       if (price !== undefined) {
         const markdown = this.markdowns.get(item) || 0
         const effectivePrice = price - markdown
-        const special = this.buyNGetMSpecials.get(item)
+        const buyNGetMSpecial = this.buyNGetMSpecials.get(item)
+        const nForXSpecial = this.nForXSpecials.get(item)
         
-        if (special) {
-          this.total += this.calculateSpecialPrice(effectivePrice, count, special)
+        if (buyNGetMSpecial) {
+          this.total += this.calculateSpecialPrice(effectivePrice, count, buyNGetMSpecial)
+        } else if (nForXSpecial) {
+          this.total += this.calculateNForXPrice(effectivePrice, count, nForXSpecial)
         } else {
           this.total += effectivePrice * count
         }
@@ -83,6 +96,17 @@ export class Checkout {
     const fullPriceItems = price * buyN
     const discountedItems = price * getM * (100 - percentOff) / 100
     return fullPriceItems + discountedItems
+  }
+
+  private calculateNForXPrice(price: number, count: number, special: NForXSpecial): number {
+    const { n, x } = special
+    const completeGroups = Math.floor(count / n)
+    const remainingItems = count % n
+    
+    const completeGroupsTotal = completeGroups * x
+    const remainingItemsTotal = remainingItems * price
+    
+    return completeGroupsTotal + remainingItemsTotal
   }
 
   getTotal(): number {
