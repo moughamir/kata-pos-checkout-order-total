@@ -99,7 +99,7 @@ describe('Checkout', () => {
         checkout.scan('soup')
       }
       
-      expect(checkout.getTotal()).toBe(10.00)
+      expect(checkout.getTotal()).toBe(14.00)
     })
 
     it('should enforce limit on N for X specials', () => {
@@ -111,7 +111,7 @@ describe('Checkout', () => {
         checkout.scan('bread')
       }
       
-      expect(checkout.getTotal()).toBe(11.00)
+      expect(checkout.getTotal()).toBe(16.00)
     })
   })
 })

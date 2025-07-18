@@ -2,11 +2,13 @@ interface BuyNGetMSpecial {
   buyN: number
   getM: number
   percentOff: number
+  limit?: number
 }
 
 interface NForXSpecial {
   n: number
   x: number
+  limit?: number
 }
 
 export class Checkout {
@@ -29,8 +31,16 @@ export class Checkout {
     this.buyNGetMSpecials.set(item, { buyN, getM, percentOff })
   }
 
+  setBuyNGetMPercentOffSpecialWithLimit(item: string, buyN: number, getM: number, percentOff: number, limit: number): void {
+    this.buyNGetMSpecials.set(item, { buyN, getM, percentOff, limit })
+  }
+
   setNForXSpecial(item: string, n: number, x: number): void {
     this.nForXSpecials.set(item, { n, x })
+  }
+
+  setNForXSpecialWithLimit(item: string, n: number, x: number, limit: number): void {
+    this.nForXSpecials.set(item, { n, x, limit })
   }
 
   scan(item: string, weight?: number): void {
@@ -79,13 +89,23 @@ export class Checkout {
   }
 
   private calculateBuyNGetMPrice(price: number, count: number, special: BuyNGetMSpecial): number {
-    const { buyN, getM } = special
+    const { buyN, getM, limit } = special
     const groupSize = buyN + getM
-    const completeGroups = Math.floor(count / groupSize)
-    const remainingItems = count % groupSize
+    let effectiveCount = count
+    
+    if (limit !== undefined) {
+      effectiveCount = Math.min(count, limit)
+    }
+    
+    const completeGroups = Math.floor(effectiveCount / groupSize)
+    const remainingItems = effectiveCount % groupSize
+    const extraItems = count - effectiveCount
     
     const specialGroupPrice = this.calculateBuyNGetMGroupPrice(price, special)
-    return this.calculateGroupBasedPrice(specialGroupPrice, completeGroups, price, remainingItems)
+    const specialTotal = this.calculateGroupBasedPrice(specialGroupPrice, completeGroups, price, remainingItems)
+    const extraTotal = price * extraItems
+    
+    return specialTotal + extraTotal
   }
 
   private calculateBuyNGetMGroupPrice(price: number, special: BuyNGetMSpecial): number {
@@ -96,11 +116,21 @@ export class Checkout {
   }
 
   private calculateNForXPrice(price: number, count: number, special: NForXSpecial): number {
-    const { n, x } = special
-    const completeGroups = Math.floor(count / n)
-    const remainingItems = count % n
+    const { n, x, limit } = special
+    let effectiveCount = count
     
-    return this.calculateGroupBasedPrice(x, completeGroups, price, remainingItems)
+    if (limit !== undefined) {
+      effectiveCount = Math.min(count, limit)
+    }
+    
+    const completeGroups = Math.floor(effectiveCount / n)
+    const remainingItems = effectiveCount % n
+    const extraItems = count - effectiveCount
+    
+    const specialTotal = this.calculateGroupBasedPrice(x, completeGroups, price, remainingItems)
+    const extraTotal = price * extraItems
+    
+    return specialTotal + extraTotal
   }
 
   private calculateGroupBasedPrice(groupPrice: number, completeGroups: number, itemPrice: number, remainingItems: number): number {
