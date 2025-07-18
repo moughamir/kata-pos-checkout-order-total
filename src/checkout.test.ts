@@ -88,4 +88,30 @@ describe('Checkout', () => {
       expect(checkout.getTotal()).toBe(6.89)
     })
   })
+
+  describe('Use Case 6: Support limits on specials', () => {
+    it('should enforce limit on buy N get M percent off specials', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 2.00)
+      checkout.setBuyNGetMPercentOffSpecialWithLimit('soup', 2, 1, 100, 6)
+      
+      for (let i = 0; i < 9; i++) {
+        checkout.scan('soup')
+      }
+      
+      expect(checkout.getTotal()).toBe(10.00)
+    })
+
+    it('should enforce limit on N for X specials', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('bread', 2.00)
+      checkout.setNForXSpecialWithLimit('bread', 3, 5.00, 6)
+      
+      for (let i = 0; i < 9; i++) {
+        checkout.scan('bread')
+      }
+      
+      expect(checkout.getTotal()).toBe(11.00)
+    })
+  })
 })
