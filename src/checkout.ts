@@ -68,7 +68,7 @@ export class Checkout {
         const nForXSpecial = this.nForXSpecials.get(item)
         
         if (buyNGetMSpecial) {
-          this.total += this.calculateSpecialPrice(effectivePrice, count, buyNGetMSpecial)
+          this.total += this.calculateBuyNGetMPrice(effectivePrice, count, buyNGetMSpecial)
         } else if (nForXSpecial) {
           this.total += this.calculateNForXPrice(effectivePrice, count, nForXSpecial)
         } else {
@@ -78,20 +78,17 @@ export class Checkout {
     }
   }
 
-  private calculateSpecialPrice(price: number, count: number, special: BuyNGetMSpecial): number {
-    const { buyN, getM, percentOff } = special
+  private calculateBuyNGetMPrice(price: number, count: number, special: BuyNGetMSpecial): number {
+    const { buyN, getM } = special
     const groupSize = buyN + getM
     const completeGroups = Math.floor(count / groupSize)
     const remainingItems = count % groupSize
     
-    const specialGroupPrice = this.calculateSpecialGroupPrice(price, special)
-    const completeGroupsTotal = specialGroupPrice * completeGroups
-    const remainingItemsTotal = price * remainingItems
-    
-    return completeGroupsTotal + remainingItemsTotal
+    const specialGroupPrice = this.calculateBuyNGetMGroupPrice(price, special)
+    return this.calculateGroupBasedPrice(specialGroupPrice, completeGroups, price, remainingItems)
   }
 
-  private calculateSpecialGroupPrice(price: number, special: BuyNGetMSpecial): number {
+  private calculateBuyNGetMGroupPrice(price: number, special: BuyNGetMSpecial): number {
     const { buyN, getM, percentOff } = special
     const fullPriceItems = price * buyN
     const discountedItems = price * getM * (100 - percentOff) / 100
@@ -103,9 +100,12 @@ export class Checkout {
     const completeGroups = Math.floor(count / n)
     const remainingItems = count % n
     
-    const completeGroupsTotal = completeGroups * x
-    const remainingItemsTotal = remainingItems * price
-    
+    return this.calculateGroupBasedPrice(x, completeGroups, price, remainingItems)
+  }
+
+  private calculateGroupBasedPrice(groupPrice: number, completeGroups: number, itemPrice: number, remainingItems: number): number {
+    const completeGroupsTotal = groupPrice * completeGroups
+    const remainingItemsTotal = itemPrice * remainingItems
     return completeGroupsTotal + remainingItemsTotal
   }
 
