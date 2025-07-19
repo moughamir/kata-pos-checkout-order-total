@@ -114,4 +114,34 @@ describe('Checkout', () => {
       expect(checkout.getTotal()).toBe(16.00)
     })
   })
+
+  describe('Use Case 7: Support removing scanned items', () => {
+    it('should remove item and recalculate total', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 1.89)
+      checkout.setPricing('bread', 2.50)
+      checkout.scan('soup')
+      checkout.scan('bread')
+      checkout.scan('soup')
+      
+      expect(checkout.getTotal()).toBe(6.28)
+      
+      checkout.removeItem('soup')
+      expect(checkout.getTotal()).toBe(4.39)
+    })
+
+    it('should handle removing items that invalidate specials', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('soup', 2.00)
+      checkout.setBuyNGetMPercentOffSpecial('soup', 2, 1, 100)
+      checkout.scan('soup')
+      checkout.scan('soup')
+      checkout.scan('soup')
+      
+      expect(checkout.getTotal()).toBe(4.00)
+      
+      checkout.removeItem('soup')
+      expect(checkout.getTotal()).toBe(4.00)
+    })
+  })
 })
