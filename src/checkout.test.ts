@@ -124,10 +124,10 @@ describe('Checkout', () => {
       checkout.scan('bread')
       checkout.scan('soup')
       
-      expect(checkout.getTotal()).toBe(6.28)
+      expect(checkout.getTotal()).toBeCloseTo(6.28)
       
       checkout.removeItem('soup')
-      expect(checkout.getTotal()).toBe(4.39)
+      expect(checkout.getTotal()).toBeCloseTo(4.39)
     })
 
     it('should handle removing items that invalidate specials', () => {

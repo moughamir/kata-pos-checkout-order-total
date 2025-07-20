@@ -51,6 +51,18 @@ export class Checkout {
     }
   }
 
+  removeItem(item: string): void {
+    const currentCount = this.scannedItems.get(item) || 0
+    if (currentCount > 0) {
+      if (currentCount === 1) {
+        this.scannedItems.delete(item)
+      } else {
+        this.scannedItems.set(item, currentCount - 1)
+      }
+      this.recalculateTotal()
+    }
+  }
+
   private scanUnitItem(item: string): void {
     const currentCount = this.scannedItems.get(item) || 0
     this.scannedItems.set(item, currentCount + 1)
