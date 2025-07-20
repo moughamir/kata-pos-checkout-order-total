@@ -6,7 +6,7 @@ describe('Checkout', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 1.89)
       checkout.scan('soup')
-      
+
       expect(checkout.getTotal()).toBe(1.89)
     })
   })
@@ -16,7 +16,7 @@ describe('Checkout', () => {
       const checkout = new Checkout()
       checkout.setPricing('ground beef', 5.99)
       checkout.scan('ground beef', 2.5)
-      
+
       expect(checkout.getTotal()).toBeCloseTo(14.975)
     })
   })
@@ -25,18 +25,18 @@ describe('Checkout', () => {
     it('should apply markdown to per-unit items', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 1.89)
-      checkout.setMarkdown('soup', 0.20)
+      checkout.setMarkdown('soup', 0.2)
       checkout.scan('soup')
-      
+
       expect(checkout.getTotal()).toBe(1.69)
     })
 
     it('should apply markdown to weighted items per unit', () => {
       const checkout = new Checkout()
       checkout.setPricing('ground beef', 5.99)
-      checkout.setMarkdown('ground beef', 1.00)
+      checkout.setMarkdown('ground beef', 1.0)
       checkout.scan('ground beef', 2.0)
-      
+
       expect(checkout.getTotal()).toBeCloseTo(9.98)
     })
   })
@@ -48,19 +48,19 @@ describe('Checkout', () => {
       checkout.setBuyNGetMPercentOffSpecial('soup', 1, 1, 100)
       checkout.scan('soup')
       checkout.scan('soup')
-      
+
       expect(checkout.getTotal()).toBe(1.89)
     })
 
     it('should apply buy 2 get 1 half off special', () => {
       const checkout = new Checkout()
-      checkout.setPricing('bread', 2.00)
+      checkout.setPricing('bread', 2.0)
       checkout.setBuyNGetMPercentOffSpecial('bread', 2, 1, 50)
       checkout.scan('bread')
       checkout.scan('bread')
       checkout.scan('bread')
-      
-      expect(checkout.getTotal()).toBe(5.00)
+
+      expect(checkout.getTotal()).toBe(5.0)
     })
   })
 
@@ -68,23 +68,23 @@ describe('Checkout', () => {
     it('should apply 3 for $5.00 special', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 1.89)
-      checkout.setNForXSpecial('soup', 3, 5.00)
+      checkout.setNForXSpecial('soup', 3, 5.0)
       checkout.scan('soup')
       checkout.scan('soup')
       checkout.scan('soup')
-      
-      expect(checkout.getTotal()).toBe(5.00)
+
+      expect(checkout.getTotal()).toBe(5.0)
     })
 
     it('should handle partial groups in N for $X specials', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 1.89)
-      checkout.setNForXSpecial('soup', 3, 5.00)
+      checkout.setNForXSpecial('soup', 3, 5.0)
       checkout.scan('soup')
       checkout.scan('soup')
       checkout.scan('soup')
       checkout.scan('soup')
-      
+
       expect(checkout.getTotal()).toBe(6.89)
     })
   })
@@ -92,26 +92,26 @@ describe('Checkout', () => {
   describe('Use Case 6: Support limits on specials', () => {
     it('should enforce limit on buy N get M percent off specials', () => {
       const checkout = new Checkout()
-      checkout.setPricing('soup', 2.00)
+      checkout.setPricing('soup', 2.0)
       checkout.setBuyNGetMPercentOffSpecialWithLimit('soup', 2, 1, 100, 6)
-      
+
       for (let i = 0; i < 9; i++) {
         checkout.scan('soup')
       }
-      
-      expect(checkout.getTotal()).toBe(14.00)
+
+      expect(checkout.getTotal()).toBe(14.0)
     })
 
     it('should enforce limit on N for X specials', () => {
       const checkout = new Checkout()
-      checkout.setPricing('bread', 2.00)
-      checkout.setNForXSpecialWithLimit('bread', 3, 5.00, 6)
-      
+      checkout.setPricing('bread', 2.0)
+      checkout.setNForXSpecialWithLimit('bread', 3, 5.0, 6)
+
       for (let i = 0; i < 9; i++) {
         checkout.scan('bread')
       }
-      
-      expect(checkout.getTotal()).toBe(16.00)
+
+      expect(checkout.getTotal()).toBe(16.0)
     })
   })
 
@@ -142,6 +142,18 @@ describe('Checkout', () => {
       
       checkout.removeItem('soup')
       expect(checkout.getTotal()).toBe(4.00)
+    })
+  })
+
+  describe('Use Case 8: Buy N get M of equal or lesser value for %X off on weighted items', () => {
+    it('should apply weighted item special', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('ground beef', 5.99)
+      checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
+      checkout.scan('ground beef', 2.0)
+      checkout.scan('ground beef', 1.5)
+      
+      expect(checkout.getTotal()).toBeCloseTo(16.4775)
     })
   })
 })

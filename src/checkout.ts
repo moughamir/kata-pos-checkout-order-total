@@ -27,11 +27,22 @@ export class Checkout {
     this.markdowns.set(item, markdown)
   }
 
-  setBuyNGetMPercentOffSpecial(item: string, buyN: number, getM: number, percentOff: number): void {
+  setBuyNGetMPercentOffSpecial(
+    item: string,
+    buyN: number,
+    getM: number,
+    percentOff: number
+  ): void {
     this.buyNGetMSpecials.set(item, { buyN, getM, percentOff })
   }
 
-  setBuyNGetMPercentOffSpecialWithLimit(item: string, buyN: number, getM: number, percentOff: number, limit: number): void {
+  setBuyNGetMPercentOffSpecialWithLimit(
+    item: string,
+    buyN: number,
+    getM: number,
+    percentOff: number,
+    limit: number
+  ): void {
     this.buyNGetMSpecials.set(item, { buyN, getM, percentOff, limit })
   }
 
@@ -39,7 +50,12 @@ export class Checkout {
     this.nForXSpecials.set(item, { n, x })
   }
 
-  setNForXSpecialWithLimit(item: string, n: number, x: number, limit: number): void {
+  setNForXSpecialWithLimit(
+    item: string,
+    n: number,
+    x: number,
+    limit: number
+  ): void {
     this.nForXSpecials.set(item, { n, x, limit })
   }
 
@@ -80,7 +96,7 @@ export class Checkout {
 
   private recalculateTotal(): void {
     this.total = 0
-    
+
     for (const [item, count] of this.scannedItems) {
       const price = this.prices.get(item)
       if (price !== undefined) {
@@ -88,11 +104,19 @@ export class Checkout {
         const effectivePrice = price - markdown
         const buyNGetMSpecial = this.buyNGetMSpecials.get(item)
         const nForXSpecial = this.nForXSpecials.get(item)
-        
+
         if (buyNGetMSpecial) {
-          this.total += this.calculateBuyNGetMPrice(effectivePrice, count, buyNGetMSpecial)
+          this.total += this.calculateBuyNGetMPrice(
+            effectivePrice,
+            count,
+            buyNGetMSpecial
+          )
         } else if (nForXSpecial) {
-          this.total += this.calculateNForXPrice(effectivePrice, count, nForXSpecial)
+          this.total += this.calculateNForXPrice(
+            effectivePrice,
+            count,
+            nForXSpecial
+          )
         } else {
           this.total += effectivePrice * count
         }
@@ -100,42 +124,66 @@ export class Checkout {
     }
   }
 
-  private calculateBuyNGetMPrice(price: number, count: number, special: BuyNGetMSpecial): number {
+  private calculateBuyNGetMPrice(
+    price: number,
+    count: number,
+    special: BuyNGetMSpecial
+  ): number {
     const { buyN, getM, limit } = special
     const groupSize = buyN + getM
     const { effectiveCount, extraItems } = this.applyLimit(count, limit)
-    
+
     const completeGroups = Math.floor(effectiveCount / groupSize)
     const remainingItems = effectiveCount % groupSize
-    
+
     const specialGroupPrice = this.calculateBuyNGetMGroupPrice(price, special)
-    const specialTotal = this.calculateGroupBasedPrice(specialGroupPrice, completeGroups, price, remainingItems)
+    const specialTotal = this.calculateGroupBasedPrice(
+      specialGroupPrice,
+      completeGroups,
+      price,
+      remainingItems
+    )
     const extraTotal = price * extraItems
-    
+
     return specialTotal + extraTotal
   }
 
-  private calculateBuyNGetMGroupPrice(price: number, special: BuyNGetMSpecial): number {
+  private calculateBuyNGetMGroupPrice(
+    price: number,
+    special: BuyNGetMSpecial
+  ): number {
     const { buyN, getM, percentOff } = special
     const fullPriceItems = price * buyN
-    const discountedItems = price * getM * (100 - percentOff) / 100
+    const discountedItems = (price * getM * (100 - percentOff)) / 100
     return fullPriceItems + discountedItems
   }
 
-  private calculateNForXPrice(price: number, count: number, special: NForXSpecial): number {
+  private calculateNForXPrice(
+    price: number,
+    count: number,
+    special: NForXSpecial
+  ): number {
     const { n, x, limit } = special
     const { effectiveCount, extraItems } = this.applyLimit(count, limit)
-    
+
     const completeGroups = Math.floor(effectiveCount / n)
     const remainingItems = effectiveCount % n
-    
-    const specialTotal = this.calculateGroupBasedPrice(x, completeGroups, price, remainingItems)
+
+    const specialTotal = this.calculateGroupBasedPrice(
+      x,
+      completeGroups,
+      price,
+      remainingItems
+    )
     const extraTotal = price * extraItems
-    
+
     return specialTotal + extraTotal
   }
 
-  private applyLimit(count: number, limit?: number): { effectiveCount: number; extraItems: number } {
+  private applyLimit(
+    count: number,
+    limit?: number
+  ): { effectiveCount: number; extraItems: number } {
     if (limit !== undefined) {
       const effectiveCount = Math.min(count, limit)
       const extraItems = count - effectiveCount
@@ -144,7 +192,12 @@ export class Checkout {
     return { effectiveCount: count, extraItems: 0 }
   }
 
-  private calculateGroupBasedPrice(groupPrice: number, completeGroups: number, itemPrice: number, remainingItems: number): number {
+  private calculateGroupBasedPrice(
+    groupPrice: number,
+    completeGroups: number,
+    itemPrice: number,
+    remainingItems: number
+  ): number {
     const completeGroupsTotal = groupPrice * completeGroups
     const remainingItemsTotal = itemPrice * remainingItems
     return completeGroupsTotal + remainingItemsTotal
