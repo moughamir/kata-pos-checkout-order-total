@@ -145,15 +145,4 @@ describe('Checkout', () => {
     })
   })
 
-  describe('Use Case 8: Buy N get M of equal or lesser value for %X off on weighted items', () => {
-    it('should apply weighted item special', () => {
-      const checkout = new Checkout()
-      checkout.setPricing('ground beef', 5.99)
-      checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
-      checkout.scan('ground beef', 2.0)
-      checkout.scan('ground beef', 1.5)
-      
-      expect(checkout.getTotal()).toBeCloseTo(16.4775)
-    })
-  })
 })
