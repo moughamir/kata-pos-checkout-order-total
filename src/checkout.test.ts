@@ -145,4 +145,26 @@ describe('Checkout', () => {
     })
   })
 
+  describe('Use Case 8: Buy N get M of equal or lesser value for %X off on weighted items', () => {
+    it('should apply weighted special - buy 2 pounds get 1 pound half off', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('ground beef', 5.99)
+      checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
+      checkout.scan('ground beef', 2.0)
+      checkout.scan('ground beef', 1.0)
+      
+      expect(checkout.getTotal()).toBeCloseTo(14.975)
+    })
+
+    it('should handle partial weighted specials', () => {
+      const checkout = new Checkout()
+      checkout.setPricing('ground beef', 5.99)
+      checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
+      checkout.scan('ground beef', 1.5)
+      checkout.scan('ground beef', 2.0)
+      
+      expect(checkout.getTotal()).toBeCloseTo(19.4675)
+    })
+  })
+
 })
