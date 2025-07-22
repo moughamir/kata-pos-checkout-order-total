@@ -119,29 +119,29 @@ describe('Checkout', () => {
     it('should remove item and recalculate total', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 1.89)
-      checkout.setPricing('bread', 2.50)
+      checkout.setPricing('bread', 2.5)
       checkout.scan('soup')
       checkout.scan('bread')
       checkout.scan('soup')
-      
+
       expect(checkout.getTotal()).toBeCloseTo(6.28)
-      
+
       checkout.removeItem('soup')
       expect(checkout.getTotal()).toBeCloseTo(4.39)
     })
 
     it('should handle removing items that invalidate specials', () => {
       const checkout = new Checkout()
-      checkout.setPricing('soup', 2.00)
+      checkout.setPricing('soup', 2.0)
       checkout.setBuyNGetMPercentOffSpecial('soup', 2, 1, 100)
       checkout.scan('soup')
       checkout.scan('soup')
       checkout.scan('soup')
-      
-      expect(checkout.getTotal()).toBe(4.00)
-      
+
+      expect(checkout.getTotal()).toBe(4.0)
+
       checkout.removeItem('soup')
-      expect(checkout.getTotal()).toBe(4.00)
+      expect(checkout.getTotal()).toBe(4.0)
     })
   })
 
@@ -152,7 +152,7 @@ describe('Checkout', () => {
       checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
       checkout.scan('ground beef', 2.0)
       checkout.scan('ground beef', 1.0)
-      
+
       expect(checkout.getTotal()).toBeCloseTo(14.975)
     })
 
@@ -162,9 +162,8 @@ describe('Checkout', () => {
       checkout.setWeightedBuyNGetMPercentOffSpecial('ground beef', 2, 1, 50)
       checkout.scan('ground beef', 1.5)
       checkout.scan('ground beef', 2.0)
-      
+
       expect(checkout.getTotal()).toBeCloseTo(17.97)
     })
   })
-
 })
