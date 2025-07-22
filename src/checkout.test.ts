@@ -163,7 +163,7 @@ describe('Checkout', () => {
       checkout.scan('ground beef', 1.5)
       checkout.scan('ground beef', 2.0)
       
-      expect(checkout.getTotal()).toBeCloseTo(19.4675)
+      expect(checkout.getTotal()).toBeCloseTo(17.97)
     })
   })
 

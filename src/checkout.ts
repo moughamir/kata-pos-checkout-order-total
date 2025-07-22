@@ -1,6 +1,7 @@
 enum SpecialType {
   BUY_N_GET_M = 'buyNGetM',
-  N_FOR_X = 'nForX'
+  N_FOR_X = 'nForX',
+  WEIGHTED_BUY_N_GET_M = 'weightedBuyNGetM'
 }
 
 interface BaseSpecial {
@@ -21,7 +22,14 @@ interface NForXSpecial extends BaseSpecial {
   readonly x: number
 }
 
-type Special = BuyNGetMSpecial | NForXSpecial
+interface WeightedBuyNGetMSpecial extends BaseSpecial {
+  readonly type: SpecialType.WEIGHTED_BUY_N_GET_M
+  readonly buyN: number
+  readonly getM: number
+  readonly percentOff: number
+}
+
+type Special = BuyNGetMSpecial | NForXSpecial | WeightedBuyNGetMSpecial
 
 interface ItemData {
   readonly price: number
@@ -106,6 +114,24 @@ export class Checkout {
     this.setNForXSpecial(item, n, x, limit)
   }
 
+  setWeightedBuyNGetMPercentOffSpecial(
+    item: string,
+    buyN: number,
+    getM: number,
+    percentOff: number,
+    limit?: number
+  ): void {
+    this.validateSpecialParams(buyN, getM, percentOff, limit)
+    const special: WeightedBuyNGetMSpecial = {
+      type: SpecialType.WEIGHTED_BUY_N_GET_M,
+      buyN,
+      getM,
+      percentOff,
+      limit
+    }
+    this.specials.set(item, special)
+  }
+
   scan(item: string, weight?: number): void {
     if (weight !== undefined) {
       this.scanWeightedItem(item, weight)
@@ -133,12 +159,9 @@ export class Checkout {
   }
 
   private scanWeightedItem(item: string, weight: number): void {
-    const price = this.prices.get(item)
-    if (price !== undefined) {
-      const markdown = this.markdowns.get(item) || 0
-      const effectivePrice = price - markdown
-      this.total += effectivePrice * weight
-    }
+    const currentWeight = this.weightedItems.get(item) || 0
+    this.weightedItems.set(item, currentWeight + weight)
+    this.recalculateTotal()
   }
 
   private recalculateTotal(): void {
@@ -148,6 +171,13 @@ export class Checkout {
       const itemData = this.getItemData(item, count)
       if (itemData) {
         this.total += this.calculateItemTotal(itemData)
+      }
+    }
+
+    for (const [item, weight] of this.weightedItems) {
+      const itemData = this.getWeightedItemData(item, weight)
+      if (itemData) {
+        this.total += this.calculateWeightedItemTotal(itemData)
       }
     }
   }
@@ -173,6 +203,57 @@ export class Checkout {
     return this.calculateSpecialPrice(effectivePrice, count, special)
   }
 
+  private getWeightedItemData(item: string, weight: number): ItemData | null {
+    const price = this.prices.get(item)
+    if (price === undefined) return null
+
+    const markdown = this.markdowns.get(item) || 0
+    const special = this.specials.get(item)
+
+    return { price, markdown, count: weight, special }
+  }
+
+  private calculateWeightedItemTotal(itemData: ItemData): number {
+    const { price, markdown, count: weight, special } = itemData
+    const effectivePrice = price - markdown
+
+    if (!special || special.type !== SpecialType.WEIGHTED_BUY_N_GET_M) {
+      return effectivePrice * weight
+    }
+
+    return this.calculateWeightedSpecialPrice(effectivePrice, weight, special)
+  }
+
+  private calculateWeightedSpecialPrice(
+    price: number,
+    weight: number,
+    special: WeightedBuyNGetMSpecial
+  ): number {
+    const { buyN, getM, percentOff, limit } = special
+    const groupSize = buyN + getM
+    let effectiveWeight = weight
+    
+    if (limit !== undefined) {
+      effectiveWeight = Math.min(weight, limit)
+    }
+
+    const completeGroups = Math.floor(effectiveWeight / groupSize)
+    const remainingWeight = effectiveWeight % groupSize
+    const extraWeight = weight - effectiveWeight
+
+    let total = 0
+
+    for (let i = 0; i < completeGroups; i++) {
+      total += price * buyN
+      total += (price * getM * (100 - percentOff)) / 100
+    }
+
+    total += price * remainingWeight
+    total += price * extraWeight
+
+    return total
+  }
+
   private calculateSpecialPrice(
     price: number,
     count: number,
@@ -183,6 +264,8 @@ export class Checkout {
         return this.calculateBuyNGetMPrice(price, count, special)
       case SpecialType.N_FOR_X:
         return this.calculateNForXPrice(price, count, special)
+      case SpecialType.WEIGHTED_BUY_N_GET_M:
+        return price * count
       default:
         return this.exhaustiveCheck(special)
     }
