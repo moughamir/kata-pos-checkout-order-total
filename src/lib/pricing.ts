@@ -30,7 +30,7 @@ export class PricingCalculator {
     const completeGroups = Math.floor(effectiveCount / groupSize)
     const remainingItems = effectiveCount % groupSize
 
-    const groupPrice = this.calculateBuyNGetMGroupPrice(price, special)
+    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(price, buyN, getM, special.percentOff)
     const specialTotal = this.calculateGroupBasedPrice(
       groupPrice,
       completeGroups,
@@ -42,11 +42,12 @@ export class PricingCalculator {
     return specialTotal + extraTotal
   }
 
-  static calculateBuyNGetMGroupPrice(
+  static calculateGroupDiscountPrice(
     price: number,
-    special: BuyNGetMSpecial
+    buyN: number,
+    getM: number,
+    percentOff: number
   ): number {
-    const { buyN, getM, percentOff } = special
     const fullPriceItems = price * buyN
     const discountedItems =
       (price * getM * (DISCOUNT_CONSTANTS.FULL_PERCENT - percentOff)) /
@@ -90,7 +91,7 @@ export class PricingCalculator {
     const completeGroups = Math.floor(effectiveCount / groupSize)
     const remainingWeight = effectiveCount % groupSize
 
-    const groupPrice = this.calculateWeightedBuyNGetMGroupPrice(price, special)
+    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(price, buyN, getM, special.percentOff)
     const specialTotal = this.calculateGroupBasedPrice(
       groupPrice,
       completeGroups,
@@ -102,17 +103,7 @@ export class PricingCalculator {
     return specialTotal + extraTotal
   }
 
-  static calculateWeightedBuyNGetMGroupPrice(
-    price: number,
-    special: WeightedBuyNGetMSpecial
-  ): number {
-    const { buyN, getM, percentOff } = special
-    const fullPriceItems = price * buyN
-    const discountedItems =
-      (price * getM * (DISCOUNT_CONSTANTS.FULL_PERCENT - percentOff)) /
-      DISCOUNT_CONSTANTS.FULL_PERCENT
-    return fullPriceItems + discountedItems
-  }
+  
 
   static calculateGroupBasedPrice(
     groupPrice: number,

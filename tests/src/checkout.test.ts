@@ -93,7 +93,7 @@ describe('Checkout', () => {
     it('should enforce limit on buy N get M percent off specials', () => {
       const checkout = new Checkout()
       checkout.setPricing('soup', 2.0)
-      checkout.setBuyNGetMPercentOffSpecialWithLimit('soup', 2, 1, 100, 6)
+      checkout.setBuyNGetMPercentOffSpecial('soup', 2, 1, 100, 6)
 
       for (let i = 0; i < 9; i++) {
         checkout.scan('soup')
@@ -105,7 +105,7 @@ describe('Checkout', () => {
     it('should enforce limit on N for X specials', () => {
       const checkout = new Checkout()
       checkout.setPricing('bread', 2.0)
-      checkout.setNForXSpecialWithLimit('bread', 3, 5.0, 6)
+      checkout.setNForXSpecial('bread', 3, 5.0, 6)
 
       for (let i = 0; i < 9; i++) {
         checkout.scan('bread')

@@ -53,15 +53,7 @@ export class Checkout {
     this.specials.set(item, special)
   }
 
-  setBuyNGetMPercentOffSpecialWithLimit(
-    item: string,
-    buyN: number,
-    getM: number,
-    percentOff: number,
-    limit: number
-  ): void {
-    this.setBuyNGetMPercentOffSpecial(item, buyN, getM, percentOff, limit)
-  }
+  
 
   setNForXSpecial(item: string, n: number, x: number, limit?: number): void {
     ValidationService.validateNForXParams(n, x, limit)
@@ -74,14 +66,7 @@ export class Checkout {
     this.specials.set(item, special)
   }
 
-  setNForXSpecialWithLimit(
-    item: string,
-    n: number,
-    x: number,
-    limit: number
-  ): void {
-    this.setNForXSpecial(item, n, x, limit)
-  }
+  
 
   setWeightedBuyNGetMPercentOffSpecial(
     item: string,
