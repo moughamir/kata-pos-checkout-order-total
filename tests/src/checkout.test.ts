@@ -1,4 +1,4 @@
-import { Checkout } from './checkout'
+import { Checkout } from '../../src/checkout'
 
 describe('Checkout', () => {
   describe('Use Case 1: Accept a scanned item', () => {
