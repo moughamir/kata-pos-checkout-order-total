@@ -53,8 +53,6 @@ export class Checkout {
     this.specials.set(item, special)
   }
 
-  
-
   setNForXSpecial(item: string, n: number, x: number, limit?: number): void {
     ValidationService.validateNForXParams(n, x, limit)
     const special: NForXSpecial = {
@@ -65,8 +63,6 @@ export class Checkout {
     }
     this.specials.set(item, special)
   }
-
-  
 
   setWeightedBuyNGetMPercentOffSpecial(
     item: string,

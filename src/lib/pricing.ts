@@ -30,7 +30,12 @@ export class PricingCalculator {
     const completeGroups = Math.floor(effectiveCount / groupSize)
     const remainingItems = effectiveCount % groupSize
 
-    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(price, buyN, getM, special.percentOff)
+    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(
+      price,
+      buyN,
+      getM,
+      special.percentOff
+    )
     const specialTotal = this.calculateGroupBasedPrice(
       groupPrice,
       completeGroups,
@@ -91,7 +96,12 @@ export class PricingCalculator {
     const completeGroups = Math.floor(effectiveCount / groupSize)
     const remainingWeight = effectiveCount % groupSize
 
-    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(price, buyN, getM, special.percentOff)
+    const groupPrice = PricingCalculator.calculateGroupDiscountPrice(
+      price,
+      buyN,
+      getM,
+      special.percentOff
+    )
     const specialTotal = this.calculateGroupBasedPrice(
       groupPrice,
       completeGroups,
@@ -102,8 +112,6 @@ export class PricingCalculator {
 
     return specialTotal + extraTotal
   }
-
-  
 
   static calculateGroupBasedPrice(
     groupPrice: number,
