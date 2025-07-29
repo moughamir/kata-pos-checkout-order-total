@@ -1,4 +1,4 @@
-name: Run Jest Tests
+name: CI - Jest Tests and Linting
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run formatter
+        run: npm run format
+
+      - name: Build the project
+        run: npm run build
 
       - name: Run Jest tests
         run: npm test
